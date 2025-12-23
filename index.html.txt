@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Final Examination Result</title>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    table { margin: auto; border-collapse: collapse; }
+    th, td { border: 1px solid #000; padding: 8px; }
+    input { padding: 8px; }
+    button { padding: 8px 15px; }
+  </style>
+</head>
+<body>
+
+<h2>Howly St. Teresa English Medium School</h2>
+<h3>Final Examination Result</h3>
+
+<input type="text" id="roll" placeholder="Enter Roll Number">
+<button onclick="getResult()">View Result</button>
+
+<div id="result"></div>
+
+<script>
+const sheetURL =
+"https://docs.google.com/spreadsheets/d/https://docs.google.com/spreadsheets/d/1_5lQ1gZTQfkoJXidXDbfDGZZ4ZDVnWMSqWNkFJqM-rI/edit?gid=0#gid=0/gviz/tq?tqx=out:json";
+
+function getResult() {
+  fetch(sheetURL)
+    .then(res => res.text())
+    .then(data => {
+      const json = JSON.parse(data.substr(47).slice(0, -2));
+      const rows = json.table.rows;
+      const roll = document.getElementById("roll").value.trim();
+
+      let found = false;
+      let html = "<table><tr><th>Subject</th><th>Marks</th></tr>";
+
+      rows.forEach(r => {
+        if (r.c[0].v === roll) {
+          found = true;
+          const subjects = ["English","Assamese","Hindi","Grammar","Maths","GK","Computer","EVS"];
+          for (let i = 0; i < subjects.length; i++) {
+            html += `<tr><td>${subjects[i]}</td><td>${r.c[i+2].v}</td></tr>`;
+          }
+        }
+      });
+
+      html += "</table>";
+      document.getElementById("result").innerHTML =
+        found ? html : "<p style='color:red'>Roll Number not found</p>";
+    });
+}
+</script>
+
+</body>
+</html>
